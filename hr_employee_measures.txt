@@ -1,0 +1,37 @@
+HR EMPLOYEE ANALYTICS — DAX MEASURES
+
+1. Total Employees
+
+Total Employees =
+COUNTROWS(hr_employee)
+
+
+2. Employees Left
+
+Employees Left =
+CALCULATE(
+    COUNTROWS(hr_employee),
+    hr_employee[attrition] = "Yes"
+)
+
+
+3. Employees Stayed
+
+Employees Stayed =
+[Total Employees] - [Employees Left]
+
+
+4. Attrition Rate
+
+Attrition Rate =
+DIVIDE(
+    [Employees Left],
+    [Total Employees],
+    0
+)
+
+
+5. Average Years at Company
+
+Average Years at Company =
+AVERAGE(hr_employee[yearsatcompany])
