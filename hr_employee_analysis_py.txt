@@ -1,0 +1,173 @@
+# HR Employee Analytics
+# Python / Pandas Analysis
+
+import pandas as pd
+
+# Load dataset
+df = pd.read_csv("cleaned.csv")
+
+# View first rows
+df.head()
+
+
+# Check dataset shape
+df.shape
+
+
+# Check column names
+df.columns
+
+
+# Check missing values
+df.isnull().sum()
+
+
+# Check duplicate rows
+df.duplicated().sum()
+
+
+# Basic statistics
+df.describe()
+
+
+# Count total employees
+total_employees = df['employeenumber'].count()
+total_employees
+
+
+# Count employees by attrition
+attrition_count = df['attrition'].value_counts()
+attrition_count
+
+
+# Calculate overall attrition rate
+employees_left = df[df['attrition'] == 'Yes']['employeenumber'].count()
+
+attrition_rate = (
+    employees_left / total_employees
+) * 100
+
+round(attrition_rate, 2)
+
+
+# Count employees by department
+dept_count = df['department'].value_counts()
+dept_count
+
+
+# Count employees who left by department
+dept_attrition = df[df['attrition'] == 'Yes']['department'].value_counts()
+dept_attrition
+
+
+# Calculate attrition rate by department
+dept_total = df.groupby('department')['employeenumber'].count()
+
+dept_left = df.groupby('department')['attrition'].apply(
+    lambda x: (x == 'Yes').sum()
+)
+
+dept_analysis = pd.DataFrame({
+    'total_employees': dept_total,
+    'employees_left': dept_left
+})
+
+dept_analysis['attrition_rate'] = (
+    dept_analysis['employees_left'] /
+    dept_analysis['total_employees'] * 100
+).round(2)
+
+dept_analysis
+
+
+# Calculate attrition rate by job role
+jobrole_analysis = (
+    df.groupby('jobrole')['attrition']
+    .apply(lambda x: (x == 'Yes').mean() * 100)
+    .round(2)
+    .sort_values(ascending=False)
+)
+
+jobrole_analysis
+
+
+# Calculate attrition rate by overtime
+overtime_analysis = (
+    df.groupby('overtime')['attrition']
+    .apply(lambda x: (x == 'Yes').mean() * 100)
+    .round(2)
+    .sort_values(ascending=False)
+)
+
+overtime_analysis
+
+
+# Calculate attrition rate by gender
+gender_analysis = (
+    df.groupby('gender')['attrition']
+    .apply(lambda x: (x == 'Yes').mean() * 100)
+    .round(2)
+    .sort_values(ascending=False)
+)
+
+gender_analysis
+
+
+# Calculate attrition rate by age group
+df['age_group'] = pd.cut(
+    df['age'],
+    bins=[0, 25, 35, 45, 55, 100],
+    labels=['Under 25', '25-35', '36-45', '46-55', '55+']
+)
+
+age_analysis = (
+    df.groupby('age_group', observed=True)['attrition']
+    .apply(lambda x: (x == 'Yes').mean() * 100)
+    .round(2)
+)
+
+age_analysis
+
+
+# Calculate attrition rate by job satisfaction
+satisfaction_analysis = (
+    df.groupby('jobsatisfaction')['attrition']
+    .apply(lambda x: (x == 'Yes').mean() * 100)
+    .round(2)
+)
+
+satisfaction_analysis
+
+
+# Calculate attrition rate by work-life balance
+worklife_analysis = (
+    df.groupby('worklifebalance')['attrition']
+    .apply(lambda x: (x == 'Yes').mean() * 100)
+    .round(2)
+)
+
+worklife_analysis
+
+
+# Calculate average years at company
+average_years = df['yearsatcompany'].mean()
+
+round(average_years, 2)
+
+
+# Create salary groups
+df['salary_group'] = pd.cut(
+    df['monthlyincome'],
+    bins=[0, 3000, 6000, 10000, float('inf')],
+    labels=['Low', 'Medium', 'High', 'Very High']
+)
+
+
+# Calculate attrition rate by salary group
+salary_analysis = (
+    df.groupby('salary_group', observed=True)['attrition']
+    .apply(lambda x: (x == 'Yes').mean() * 100)
+    .round(2)
+)
+
+salary_analysis
